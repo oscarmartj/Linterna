@@ -9,11 +9,8 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            Log.d("Startuptest","onReceive");
-            Intent serviceIntent = new Intent(context, TorchService.class);
-            context.startForegroundService(serviceIntent);
-        }
+        Intent serviceIntent = new Intent(context, TorchService.class);
+        context.startService(serviceIntent);
     }
 }
 

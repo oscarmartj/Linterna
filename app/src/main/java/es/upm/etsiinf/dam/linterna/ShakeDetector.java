@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class ShakeDetector implements SensorEventListener {
 
-    private static final float SHAKE_THRESHOLD_GRAVITY = 2.2F; //2.7
+    private static final float SHAKE_THRESHOLD_GRAVITY = 2.7F; //2.7
     private static final int SHAKE_SLOP_TIME_MS = 500;
     private static final int SHAKE_COUNT_RESET_TIME_MS = 3000;
 
@@ -41,7 +41,6 @@ public class ShakeDetector implements SensorEventListener {
             float gZ = z / SensorManager.GRAVITY_EARTH;
 
             float gForce = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
-
             Log.i("gForce",gForce+"");
             if (gForce > SHAKE_THRESHOLD_GRAVITY) {
                 long now = System.currentTimeMillis();

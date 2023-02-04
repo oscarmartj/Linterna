@@ -22,7 +22,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Linterna">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,7 +46,8 @@
 
         <service
             android:name=".TorchService"
-            android:enabled="true" />
+            android:enabled="true"
+            android:exported="true" />
 
     </application>
 </manifest>

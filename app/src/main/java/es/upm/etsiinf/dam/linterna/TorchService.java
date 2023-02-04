@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
@@ -14,6 +15,10 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TorchService extends Service {
 
@@ -23,15 +28,32 @@ public class TorchService extends Service {
     private ShakeDetector mShakeDetector;
     private String mCameraId;
 
-    private boolean torchOn = false;
     private Notification notification;
     private boolean isFlashOn = false;
     private long mLastShakeTime = 0;
 
+    private SharedPreferences sharedPreferences;
+    private Timer timer;
+
+    private boolean isOpen = true;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        sharedPreferences = getSharedPreferences("flashlight_status",MODE_PRIVATE);
+        isFlashOn = sharedPreferences.getBoolean("onoff",false);
 
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (!MainActivity.isOpen) {
+                    isOpen = false;
+                }else{
+                    isOpen = true;
+                }
+            }
+        }, 0, 1000);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -91,6 +113,13 @@ public class TorchService extends Service {
         try {
             mCameraManager.setTorchMode(mCameraId, true);
             isFlashOn = true;
+            if(isOpen){
+                Intent intent = new Intent("UPDATE_IMAGE_BUTTON_ON");
+                sendBroadcast(intent);
+            }
+            sharedPreferences.edit()
+                    .putBoolean("onoff",true)
+                    .apply();
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -100,6 +129,13 @@ public class TorchService extends Service {
         try {
             mCameraManager.setTorchMode(mCameraId, false);
             isFlashOn = false;
+            if(isOpen){
+                Intent intent = new Intent("UPDATE_IMAGE_BUTTON_OFF");
+                sendBroadcast(intent);
+            }
+            sharedPreferences.edit()
+                    .putBoolean("onoff",false)
+                    .apply();
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
